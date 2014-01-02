@@ -660,24 +660,20 @@ void BCCLattice3DMesher::compute_quadruple(Tet3D* tet)
     double b5 = M[10]*M[15] - M[11]*M[14];
 
     double det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
+    if(fabs(det) < 1e-6) {
+      Vertex3D *quad = new Vertex3D(lattice->materials());
 
-    if(det == 0)
-    {
-        std::cerr << "Failed to compute Quadruple. Determinant Zero. Using Barycenter." << std::endl;
+      quad->lbls[verts[0]->label] = true;
+      quad->lbls[verts[1]->label] = true;
+      quad->lbls[verts[2]->label] = true;
+      quad->lbls[verts[3]->label] = true;
 
-        Vertex3D *quad = new Vertex3D(lattice->materials());
-
-        quad->lbls[verts[0]->label] = true;
-        quad->lbls[verts[1]->label] = true;
-        quad->lbls[verts[2]->label] = true;
-        quad->lbls[verts[3]->label] = true;
-
-        quad->pos() = 0.25*verts[0]->pos() + 0.25*verts[1]->pos() + 0.25*verts[2]->pos() + 0.25*verts[3]->pos();
-        quad->order() = QUAD;
-        quad->violating = false;
-        tet->quad = quad;
-        quad->closestGeometry = NULL;
-        return;
+      quad->pos() = 0.25*verts[0]->pos() + 0.25*verts[1]->pos() + 0.25*verts[2]->pos() + 0.25*verts[3]->pos();
+      quad->order() = QUAD;
+      quad->violating = false;
+      tet->quad = quad;
+      quad->closestGeometry = NULL;
+      return;
     }
 
     double invDet = 1/det;
@@ -1890,11 +1886,6 @@ int BCCLattice3DMesher::conformQuadruple(Tet3D *tet, Vertex3D *warp_vertex, cons
     vec3 v2 = verts[1]->pos();
     vec3 v3 = verts[2]->pos();
     vec3 v4 = verts[3]->pos();
-
-    if(quadruple != quadruple)
-    {
-        std::cerr << "PROBLEM!" << std::endl;
-    }
 
     // Fill Coordinate Matrix
     A[0][0] = v1.x - v4.x; A[0][1] = v2.x - v4.x; A[0][2] = v3.x - v4.x;
