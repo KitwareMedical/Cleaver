@@ -507,7 +507,6 @@ void BCCLattice3DMesher::compute_triple(Face3D *face)
         bool success = plane_intersect(v1, v2, v3, origin, ray, result);
         if(!success)
         {
-            cout << "Failed to Project Triple BACK into 3D: Using Barycenter" << endl;
             result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
         }
 
@@ -556,7 +555,6 @@ void BCCLattice3DMesher::compute_triple(Face3D *face)
         bool success = plane_intersect(v1, v2, v3, origin, ray, result);
         if(!success)
         {
-            cout << "Failed to Project Triple BACK into 3D. Using barycenter: " << endl;
             result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
         }
 
