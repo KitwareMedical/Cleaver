@@ -109,7 +109,7 @@ Tet::~Tet()
 
 
 TetMesh::TetMesh(std::vector<Vertex3D*> &verts, std::vector<Tet*> &tets) :
-    verts(verts), tets(tets), nFaces(0), time(0)
+    verts(verts), tets(tets), faces(0), nFaces(0), time(0)
 {
 }
 
