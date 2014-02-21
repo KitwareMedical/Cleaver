@@ -69,7 +69,8 @@ public:
 static void interpolate_cell(OTCell *cell, BCCLattice3D *lattice);
 static OTCell* addCell(BCCLattice3D *lattice, int i, int j, int k);
 static void create_dual_vertex(OTCell *cell, BCCLattice3D *lattice);
-static BCCLattice3D* constructLatticeFromVolume(const AbstractVolume *volume);
+static BCCLattice3D* constructLatticeFromVolume(const AbstractVolume *volume,
+                                                bool ownVolume = false);
 
 CleaverMesher::~CleaverMesher()
 {
@@ -77,9 +78,10 @@ CleaverMesher::~CleaverMesher()
     delete m_pimpl;
 }
 
-CleaverMesher::CleaverMesher(const AbstractVolume *volume) : m_pimpl(new CleaverMesherImp)
+CleaverMesher::CleaverMesher(const AbstractVolume *volume, bool ownVolume)
+  : m_pimpl(new CleaverMesherImp)
 {
-    m_pimpl->m_lattice = constructLatticeFromVolume(volume);    
+    m_pimpl->m_lattice = constructLatticeFromVolume(volume, ownVolume);
     m_pimpl->m_mesh = NULL;
 }
 
@@ -103,10 +105,10 @@ void CleaverMesher::cleanup()
     m_pimpl->m_lattice = NULL;
 }
 
-void CleaverMesher::setVolume(const AbstractVolume *volume)
+void CleaverMesher::setVolume(const AbstractVolume *volume, bool ownVolume)
 {
     cleanup();
-    m_pimpl->m_lattice = constructLatticeFromVolume(volume);    
+    m_pimpl->m_lattice = constructLatticeFromVolume(volume, ownVolume);
 }
 
 const AbstractVolume* CleaverMesher::getVolume() const
@@ -114,9 +116,11 @@ const AbstractVolume* CleaverMesher::getVolume() const
     return m_pimpl->m_lattice->volume;
 }
 
-TetMesh* createMeshFromVolume(const AbstractVolume *volume, bool verbose)
+TetMesh* createMeshFromVolume(const AbstractVolume *volume,
+                              bool verbose,
+                              bool ownVolume)
 {
-    CleaverMesher mesher(volume);
+    CleaverMesher mesher(volume, ownVolume);
 
     mesher.createTetMesh(verbose);
 
@@ -128,7 +132,7 @@ TetMesh* createMeshFromVolume(const AbstractVolume *volume, bool verbose)
 //
 // - This method takes in a vector of ScalarFields, and uses them to seed the BCC Lattice.
 //==========================================================================================================
-BCCLattice3D* constructLatticeFromVolume(const AbstractVolume *volume)
+BCCLattice3D* constructLatticeFromVolume(const AbstractVolume *volume, bool ownVolume)
 {
     //-----------------------------------------------------
     // Verify At Least 2 Fields Are Given As Input
@@ -141,7 +145,7 @@ BCCLattice3D* constructLatticeFromVolume(const AbstractVolume *volume)
     //-----------------------------------------------------
     //           Create Storage For Lattice
     //-----------------------------------------------------
-    BCCLattice3D *lattice = new BCCLattice3D(volume);
+    BCCLattice3D *lattice = new BCCLattice3D(volume, ownVolume);
 
 
     //-----------------------------------------------------

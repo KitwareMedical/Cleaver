@@ -98,6 +98,7 @@ TetMesh* BCCLattice3DMesher::mesh(bool snap, bool verbose)
     //--------------------------------
     //  Free Label Data From Memory
     //--------------------------------
+    lattice->releaseVolume();
     delete[] lattice->labels;
     lattice->labels = NULL;
     for(unsigned int i=0; i < lattice->cut_cells.size(); i++)

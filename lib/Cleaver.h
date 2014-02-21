@@ -54,13 +54,13 @@ class CleaverMesher
 {
 public:
 
-    CleaverMesher(const AbstractVolume *volume);
+  CleaverMesher(const AbstractVolume *volume, bool ownVolume = false);
     ~CleaverMesher();
 
     void createTetMesh(bool verbose);
     TetMesh* getTetMesh() const;
 
-    void setVolume(const AbstractVolume *volume);
+    void setVolume(const AbstractVolume *volume, bool ownVolume = false);
     const AbstractVolume* getVolume() const;
 
     void cleanup();
@@ -70,7 +70,9 @@ private:
     CleaverMesherImp *m_pimpl;
 };
 
-TetMesh* createMeshFromVolume(const AbstractVolume *volume, bool verbose = false);
+TetMesh* createMeshFromVolume(const AbstractVolume *volume,
+                              bool verbose = false,
+                              bool ownVolume = false);
 
 extern const std::string VersionNumber;
 extern const std::string VersionDate;

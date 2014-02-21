@@ -556,8 +556,10 @@ Tet3D::~Tet3D()
     }
 }
 
-BCCLattice3D::BCCLattice3D(const AbstractVolume *volume) : volume(volume)
+BCCLattice3D::BCCLattice3D(const AbstractVolume *volume, bool ownVolume)
+  : volume(volume)
 {
+    m_ownVolume = ownVolume;
     m_iNumMaterials = volume->numberOfMaterials();
     m_iWidth  = volume->width()+1;
     m_iHeight = volume->height()+1;
@@ -586,6 +588,8 @@ BCCLattice3D::BCCLattice3D(const AbstractVolume *volume) : volume(volume)
 
 BCCLattice3D::~BCCLattice3D()
 {
+    this->releaseVolume();
+
     if (labels != NULL) {
        delete[] labels;
        labels = NULL;
@@ -781,6 +785,14 @@ BCCLattice3D::~BCCLattice3D()
 }
 
 
+void BCCLattice3D::releaseVolume()
+{
+    if (m_ownVolume)
+    {
+        delete volume;
+        volume = NULL;
+    }
+}
 
 unsigned char BCCLattice3D::generalizedKey(const Tet3D *tet)
 {

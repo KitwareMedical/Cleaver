@@ -44,14 +44,22 @@
 namespace Cleaver
 {
 
+Volume::Volume()
+  : m_ownFields(false)
+{
+}
+
 Volume::Volume(const Cleaver::Volume &volume)
 {
     this->m_fields = volume.m_fields;
+    this->m_ownFields = false;
     this->m_bounds = volume.m_bounds;
 }
 
-Volume::Volume(const std::vector<ScalarField*> &fields, int width, int height, int depth) :
-    m_fields(fields), m_bounds(BoundingBox(vec3::zero, vec3(width, height, depth)))
+Volume::Volume(const std::vector<ScalarField*> &fields, int width, int height, int depth, bool ownFields) :
+    m_fields(fields),
+    m_ownFields(ownFields),
+    m_bounds(BoundingBox(vec3::zero, vec3(width, height, depth)))
 {
     if(m_fields.size() > 0)
     {
@@ -67,8 +75,10 @@ Volume::Volume(const std::vector<ScalarField*> &fields, int width, int height, i
 }
 
 
-Volume::Volume(const std::vector<ScalarField*> &fields, vec3 size) :
-    m_fields(fields), m_bounds(BoundingBox(vec3::zero, size))
+Volume::Volume(const std::vector<ScalarField*> &fields, vec3 size, bool ownFields) :
+    m_fields(fields),
+    m_ownFields(ownFields),
+    m_bounds(BoundingBox(vec3::zero, size))
 {
     if(m_fields.size() > 0)
     {
@@ -83,10 +93,31 @@ Volume::Volume(const std::vector<ScalarField*> &fields, vec3 size) :
     }
 }
 
+Volume::~Volume()
+{
+  if (m_ownFields)
+    {
+    for (size_t i = 0; i < m_fields.size(); ++i)
+      {
+      std::cout << "DELETE FIELD" << std::endl;
+      delete m_fields[i];
+      m_fields[i] = 0;
+      }
+    std::cout << "END DELETE FIELD" << std::endl;
+    }
+  else
+    {
+    std::cout << "DONT DELETE FIELD" << std::endl;
+    }
+}
+
 Volume& Volume::operator= (const Volume &volume)
 {
     this->m_bounds = volume.m_bounds;
     this->m_fields = volume.m_fields;
+    this->m_ownFields = volume.m_ownFields;
+    volume.m_ownFields = false;
+
     return *this;
 }
 
@@ -146,5 +177,15 @@ static Volume createPaddedVolume(const Volume &volume, float thickness, float hi
     return Volume(paddedFields);
 }
 */
+
+void Volume::setOwnFields(bool own)
+{
+  m_ownFields = own;
+}
+
+bool Volume::ownFields()const
+{
+  return m_ownFields;
+}
 
 }

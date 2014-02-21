@@ -53,10 +53,11 @@ namespace Cleaver
 class Volume : public AbstractVolume
 {
 public:
-    Volume(){}
+    Volume();
     Volume(const Volume &volume);
-    Volume(const std::vector<ScalarField*> &fields, int width=0, int height=0, int depth=0);
-    Volume(const std::vector<ScalarField*> &fields, vec3 size);
+    Volume(const std::vector<ScalarField*> &fields, int width=0, int height=0, int depth=0, bool ownFields = true);
+    Volume(const std::vector<ScalarField*> &fields, vec3 size, bool ownFields = false);
+    ~Volume();
     Volume& operator= (const Volume &volume);
 
     virtual float valueAt(const vec3 &x, int material) const;
@@ -68,9 +69,15 @@ public:
     void setSize(int width, int height, int depth);
 
     ScalarField* getMaterial(int i) const { return m_fields[i]; }
+    /// Set whether the scalar fields are deleted in the destructor
+    /// of Volume. False by default.
+    void setOwnFields(bool own);
+    /// Return true if the fields are deleted in the destructor of Volume.
+    bool ownFields()const;
 
 protected:
     std::vector<ScalarField*> m_fields;
+    mutable bool m_ownFields;
     Cleaver::BoundingBox m_bounds;
 };
 

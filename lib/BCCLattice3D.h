@@ -137,10 +137,11 @@ class BCCLattice3D
 public:
     //BCCLattice3D(int width, int height, int depth, int materials);
     //BCCLattice3D(int width, int height, int depth, int materials, float *data);
-    BCCLattice3D(const AbstractVolume *volume);
+  BCCLattice3D(const AbstractVolume *volume, bool ownVolume = false);
     ~BCCLattice3D();
 
     const AbstractVolume *volume;
+
     Octree *tree;              // octree structure
     unsigned char *labels;     // dominant materials
 
@@ -151,6 +152,7 @@ public:
     int width() const { return m_iWidth; }
     int height() const { return m_iHeight; }
     int depth() const { return m_iDepth; }
+    void releaseVolume();
 
     float a_long;
     float a_short;
@@ -254,6 +256,7 @@ public:
 
 
 private:
+    bool m_ownVolume;       // delete volume when no longer needed?
     int m_iNumMaterials;    // number of materials in volume
     int m_iWidth;           // width of grid
     int m_iHeight;          // height of grid
